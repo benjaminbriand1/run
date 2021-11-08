@@ -19,14 +19,6 @@ public class staticThing {
         return imageView;
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
     public double getHeight() {
         return height;
     }

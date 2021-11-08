@@ -5,22 +5,25 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
+import javafx.scene.control.*;
+
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
-import static java.lang.Math.random;
+
+import static java.lang.Math.*;
 
 public class GameScene extends Scene {
     private int Xmin;
     private int Ymin;
     private int H,W;
     public Camera camera;
-    public int numberOfLifes;
+
+    private int numberOfLifes;
     private Hero hero;
     private Group parent;
     private staticThing background= new staticThing("C:\\Users\\brian\\OneDrive\\Documents\\java\\desert.png");
@@ -31,12 +34,16 @@ public class GameScene extends Scene {
     private ImageView Left;
     private ImageView Right;
     private ArrayList<Foe> foe;
-    private int numberFoe=5;
+    private int numberFoe=10;
+    private int maxFoeX;
     private ImageView[] life;
     private int numberOfPoints=0;
     private StartGame startGame;
     private TextField text;
     public AnimationTimer timer;
+    public int numberEnnemy=0;
+    public Stage finalWindow = new Stage();
+    public StackPane secondaryLayout = new StackPane();
 
 
     public GameScene(Group parent, int width, int height, int Xmin, int Ymin) {
@@ -47,6 +54,8 @@ public class GameScene extends Scene {
         this.parent=parent;
 
         this.backGround = background.getImageView();
+        //background.getImageView().setX(Xmin);
+        //background.getImageView().setY(-Ymin);
         this.Left = left.getImageView();
         this.Right = right.getImageView();
         this.text = new TextField();
@@ -63,58 +72,65 @@ public class GameScene extends Scene {
 
         hero = new Hero("C:\\Users\\brian\\OneDrive\\Documents\\java\\heros.png", 0,0, 6,Xmin+100, 300-Ymin);
         hero.getSpreetSheet().setX(Xmin+100); //sert a placer le hero en x
-        hero.getSpreetSheet().setY(400-Ymin);//sert a placer le hero en y
+        hero.getSpreetSheet().setY(250);//sert a placer le hero en y
         parent.getChildren().add(hero.getSpreetSheet());
         this.numberOfLifes= hero.numberOfLifes;
 
         foe = new ArrayList<>();
 
-        for (int i=1; i<=numberFoe; i++) {
-            Foe ennemy = new Foe((int) ((width+ Xmin)*i+Math.random()*1000), 350 - Ymin);
-            System.out.println(ennemy.getX());
-            foe.add(ennemy);
-            parent.getChildren().add(ennemy.getSpreetSheet());
+        for (int i=0; i<numberFoe; i++) {
+            int v = (int) ((width + Xmin) * (i+1) + random() * 1000);
+            if(i>0){
+                System.out.println(foe.get(i-1).getX()+";"+v);
+                if(v-foe.get(i-1).getX()<400){
+                    v = (int) (foe.get(i-1).getX()+400);
+                }
+
+            }
+            Foe enemy = new Foe( v, 350 - Ymin);
+            System.out.println(enemy.getX());
+            foe.add(enemy);
+            parent.getChildren().add(enemy.getSpreetSheet());
         }
 
-        this.timer = new AnimationTimer() {
-            public void handle ( long time){
-                long t = (long) (time / 1000000000.0);
+        this.maxFoeX= (int) foe.get(numberFoe-1).getX();
+        System.out.println(maxFoeX);
+
+        timer = new AnimationTimer() {
+            long past;
+            public void handle ( long now){
+                double time=(now-past)*pow(10,-9);
                 try {
                     hero.update(time);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 try {
-                    camera.update(t, hero);
+                    camera.update(time, hero);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 try {
-                    update(t);
+                    update(time);
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                for (Foe o : foe) {
-                    try {
-                        o.update(t);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
+                past=now;
             }
         };
 
         this.setOnMouseClicked( (event)-> {
-            System.out.println("Jump");
             hero.jump();
         });
+
         this.life = new ImageView[numberOfLifes];
-        startGame.button1.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
+        startGame.button1.setOnAction((ActionEvent event) -> {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         timer.start();
                         parent.getChildren().remove(startGame.button1);
 
@@ -131,20 +147,12 @@ public class GameScene extends Scene {
                             parent.getChildren().add(life[i]);
                             life[i].setX(width-55*(1+i));
                         }
-                    }
                 });
-
-        timer.handle(1000);
-
-
-
-
     }
 
 
-    public void update(long t) throws InterruptedException {
-        //Thread.sleep(50);
-        this.Xmin += 25;
+    public void update(double time) throws InterruptedException {
+        this.Xmin +=10;
         this.numberOfPoints++;
         text.setText("Points : "+numberOfPoints);
         if (Xmin > 800) {
@@ -156,32 +164,56 @@ public class GameScene extends Scene {
 
        // hero.getSpreetSheet().setX(hero.getX() - camera.getX());
       //  hero.getImageView().setY(hero.getY() - camera.getY());
-        for (Foe ennemy:foe) {
-            if (hero.isInvicible()==false) {
-                if (collision(hero.hitbox, ennemy.hitbox)) {
-                    hero.setInvincibility(25);
-                    hero.isInvicible();
-                    hero.touchHero();
-                    ennemy.getSpreetSheet().setY(1000);
-                    numberOfPoints-=50;
+        if(!foe.isEmpty()) {
+            for (Foe enemy : foe) {
+                int x = (int) enemy.getSpreetSheet().getX() - 10;
+                enemy.getSpreetSheet().setX(x);
+                //System.out.println(enemy.getSpreetSheet().getX());
+                enemy.hitbox = new Rectangle2D(x, enemy.getSpreetSheet().getY(), 50, 50);
+                //System.out.println("ennemy : "+ennemy.hitbox);
+                if (hero.isInvicible() == false) {
+                    if (collision(hero.hitbox, enemy.hitbox)) {
+                        hero.setInvincibility(1750);
+                        hero.isInvicible();
+                        hero.touchHero();
+                        parent.getChildren().remove(enemy.getSpreetSheet());
+                        numberOfPoints -= 50;
+                    }
                 }
             }
+
         }
+
 
         this.numberOfLifes= hero.numberOfLifes;
         if (numberOfLifes!=life.length){
             parent.getChildren().remove(life[numberOfLifes]);
         }
-
-        if(numberOfLifes==0){
+        if(numberOfLifes==0 || 10*numberOfPoints>maxFoeX+500) {
             timer.stop();
-        }
+            Label secondLabel = new Label("");
 
+            if(numberOfLifes==0) secondLabel.setText( "YOU LOSE !!!\n"+"You have "+numberOfPoints+" points !");
+            if(10*numberOfPoints>maxFoeX+500) secondLabel.setText( "YOU WIN !!!\n"+"You have "+numberOfPoints+" points !");
+
+            secondaryLayout.getChildren().add(secondLabel);
+            finalWindow.setTitle("Finish");
+            Scene secondScene = new Scene(secondaryLayout, 400, 200);
+            finalWindow.setScene(secondScene);
+
+            // Specifies the modality for new window.
+            finalWindow.initModality(Modality.WINDOW_MODAL);
+            // Specifies the owner Window (parent) for new window
+            finalWindow.initOwner(super.getWindow());
+            // Set position of second window, related to primary window.
+            finalWindow.setX(Xmin+300);
+            finalWindow.setY(Ymin+200);
+            finalWindow.show();
+        }
     }
 
     public boolean collision(Rectangle2D hitBox1, Rectangle2D hitBox2 ){
         return hitBox1.intersects(hitBox2);
     }
-
-
 }
+

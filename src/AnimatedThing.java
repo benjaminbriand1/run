@@ -3,15 +3,18 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import static java.lang.Math.abs;
+
 abstract class AnimatedThing {
     private double x;
     private double y;
     enum Attitude{RUN, STILL, JUMPING_UP, JUMPING_DOWN, DEAD}
 
     private ImageView spreetSheet;
-    private int index;
-    private int indexMax;
+    protected int index;
+    protected int indexMax=6;
     private final int ground=150;
+
 
     protected Attitude attitude;
     protected Point2D sizeWindow;
@@ -30,51 +33,9 @@ abstract class AnimatedThing {
     }
 
 
-    public void update(long t) throws InterruptedException {
-        //index=(int) ((t%(indexMax*1000))/1000);
-        Thread.sleep(30);
+    /*public void update(double time) throws InterruptedException {
 
-        if (attitude==Attitude.RUN) {
-            if (index >= indexMax) {
-                index = 0;
-            }
-            index++;
-            if (index == 1) {
-                spreetSheet.setViewport(new Rectangle2D(20, 0, 60, 100));
-            }
-            if (index == 2) {
-                spreetSheet.setViewport(new Rectangle2D(95, 0, 70, 100));
-            }
-            if (index == 3) {
-                spreetSheet.setViewport(new Rectangle2D(170, 10, 85, 90));
-            }
-            if (index == 4) {
-                spreetSheet.setViewport(new Rectangle2D(270, 10, 65, 90));
-            }
-            if (index == 5) {
-                spreetSheet.setViewport(new Rectangle2D(345, 0, 70, 100));
-            }
-            if (index == 6) {
-                spreetSheet.setViewport(new Rectangle2D(95, 0, 70, 100));
-            }
-        }
-
-        if (attitude==Attitude.JUMPING_DOWN) {
-            spreetSheet.setViewport(new Rectangle2D(95,160,70,105));
-        }
-
-        if (attitude==Attitude.JUMPING_UP) {
-            spreetSheet.setViewport(new Rectangle2D(20,160,60,105));
-        }
-
-        if (attitude==Attitude.STILL){
-            spreetSheet.setViewport(new Rectangle2D(20, 0, 60, 100));
-        }
-
-        if (attitude==Attitude.DEAD){
-            //
-        }
-    }
+    }*/
 
     public ImageView getSpreetSheet() {
         return spreetSheet;
@@ -84,11 +45,20 @@ abstract class AnimatedThing {
         return y;
     }
 
+
     public double getX() {
         return x;
     }
 
     public Attitude getAttitude() {
         return attitude;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public int getIndexMax() {
+        return indexMax;
     }
 }

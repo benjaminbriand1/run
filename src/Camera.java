@@ -21,7 +21,7 @@ public class Camera {
         this.Y=Y;
         }
 
-    public void update(long time, Hero hero ) throws InterruptedException {
+    public void update(double time, Hero hero ) throws InterruptedException {
         double xhero= hero.getX();
         double yhero= hero.getY();
 

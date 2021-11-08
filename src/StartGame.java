@@ -39,8 +39,4 @@ public class StartGame {
             return false;
         }
     }
-
-    public int getStart() {
-        return start;
-    }
 }
