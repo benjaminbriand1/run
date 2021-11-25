@@ -2,11 +2,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class staticThing {
-    private double x;
-    private double y;
     private double height;
     private double width;
     private ImageView imageView;
+
 
     public staticThing(String fileName){
             Image image = new Image(fileName);

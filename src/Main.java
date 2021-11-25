@@ -1,26 +1,22 @@
 // add any usefull package line
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.scene.Camera;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
 public class Main extends Application{
-    public StartGame startGame;
     public GameScene s;
     public Group root;
 
-    public void start(Stage primaryStage) throws Exception{
-        int Xmin=50, Ymin=50, height=400, width=800;
+
+    public void start(Stage primaryStage) {
+        int Xmin=50, Ymin=150, height=250, width=600;
 
         root = new Group();
         s = new GameScene(root, width, height, Xmin, Ymin);
@@ -28,7 +24,7 @@ public class Main extends Application{
         primaryStage.setTitle("Runner");
         StackPane secondaryLayout = new StackPane();
         Scene secondScene = new Scene(secondaryLayout, width, height);
-        ImageView backGround = new ImageView(new Image("C:\\Users\\brian\\OneDrive\\Documents\\java\\desert.png"));
+        ImageView backGround = new ImageView(new Image("C:\\Users\\brian\\OneDrive\\Documents\\java\\pictureRunner\\desert.png"));
         secondaryLayout.getChildren().add(backGround);
         primaryStage.setScene(secondScene);
         primaryStage.show();

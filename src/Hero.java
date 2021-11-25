@@ -1,16 +1,14 @@
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.image.ImageView;
 
-import static java.lang.Math.abs;
 
 public class Hero extends AnimatedThing{
     private double x;
     private double y;
-    private double a_x, a_y;
-    private double v_x, v_y;
-    private double f_x, f_y;
-    private final int ground=150;
+    private double a_y;
+    private double v_y;
+    private double f_y;
+    private final int ground=50;
     private double invincibility;
     protected int numberOfLifes;
     private int duration=0;
@@ -33,20 +31,15 @@ public class Hero extends AnimatedThing{
 
     }
 
-    //@Override
     public void update(double time) throws InterruptedException {
         if (time>1) time=0;
-        //Thread.sleep(15);
         duration++;
-        //System.out.println(duration);
         if (duration==8) {
             index++;
-
             duration=0;
             if (index > indexMax) {
                 index = 1;
             }
-            //System.out.println(index);
             if (index == 1) {
                 super.getSpreetSheet().setViewport(new Rectangle2D(20, 0, 60, 100));
             }
@@ -79,14 +72,10 @@ public class Hero extends AnimatedThing{
             super.getSpreetSheet().setViewport(new Rectangle2D(20, 0, 60, 100));
         }
 
-        if (attitude==Attitude.DEAD){
-            //
-        }
         updateAttitude();
         a_y = ( g- f_y/m);
-        v_y+=a_y;
+        v_y+=0.5*a_y;
         y+=v_y;
-
         if (y > ground + sizeWindow.getY()) {
             if (v_y > 0) {
                 v_y = 0;
@@ -95,15 +84,10 @@ public class Hero extends AnimatedThing{
         }
 
         hitbox=new Rectangle2D(this.x,super.getSpreetSheet().getY(),sizeWindow.getX(), sizeWindow.getY());
-        //System.out.println(hitbox);
-        a_x=f_x/m;
-        v_x+=a_x;
-        x += v_x;
 
-        super.getSpreetSheet().setY(y);
+        super.getSpreetSheet().setY(0.1*y+85); // to reduce variations of hero in y because the camera is active
 
         f_y=0;
-
     }
 
     public void updateAttitude(){
@@ -121,13 +105,6 @@ public class Hero extends AnimatedThing{
             attitude = Attitude.DEAD;
         }
 
-        /*if (v_x==0){
-            attitude = Attitude.STILL;
-        }*/
-    }
-
-    public double getInvincibility() {
-        return invincibility;
     }
 
     public void setInvincibility(double invincibility) {
@@ -138,12 +115,7 @@ public class Hero extends AnimatedThing{
         if(invincibility>0) {
             invincibility--;
         }
-        if(invincibility==0){
-            return false;
-        }
-        else {
-            return true;
-        }
+        return invincibility != 0;
 
     }
 
@@ -154,4 +126,12 @@ public class Hero extends AnimatedThing{
         }
     }
 
+    @Override
+    public double getY() {
+        return y;
+    }
+
+    public int getGround() {
+        return ground;
+    }
 }

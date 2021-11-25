@@ -1,53 +1,43 @@
-import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
-import java.lang.Math.*;
+
 
 public class Camera {
-    private int X;
-    private int Y;
+    private double X;
+    private double Y;
+    private int width;
+    private int height;
+    private int Ymin;
+    private ImageView backGround;
+    private ImageView Left;
+    private ImageView Right;
 
-    private double k=1;
-    private double m=70;
-    private double f=10;
 
-    private double a_x;
-    private double a_y;
-
-    private double v_x;
-    private double v_y;
-
-    public Camera (Integer X, Integer Y) {
+    public Camera(Integer X, Integer Y, int width, int height, ImageView backGround, ImageView Left, ImageView Right) {
         this.X=X;
         this.Y=Y;
+        this.Ymin=Y;
+        this.width=width;
+        this.height=height;
+        this.backGround=backGround;
+        this.Left=Left;
+        this.Right=Right;
         }
 
     public void update(double time, Hero hero ) throws InterruptedException {
-        double xhero= hero.getX();
         double yhero= hero.getY();
+        Y=-yhero;
 
-        double k_m =k/m;
-        double f_m =f/m;
+        backGround.setY(Y);
+        Left.setY(Y);
+        Right.setY(Y);
 
-        a_x = k_m*(xhero - X) + (f_m * v_x);
-        v_x+=a_x;
-        X+=v_x;
 
-        a_y = (k_m * (yhero - Y)) + (f_m * v_y);
-        v_y+=a_y;
-        Y+=v_y;
-
-    }
-
-    public int getY() {
-        return Y;
-    }
-
-    public int getX() {
-        return X;
     }
 
     @Override
     public String toString() {
         return X+","+Y;
     }
+
 }
+
